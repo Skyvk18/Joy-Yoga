@@ -1,406 +1,176 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Phone, Mail, MessageCircle, MapPin, Clock, CheckCircle2, Sparkles } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joy Yoga | Madhavi Dixit</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 },
-};
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
+body{background:linear-gradient(to bottom,#f5f3ff,#fff,#ede9fe);color:#333;scroll-behavior:smooth}
 
-const initialSlots = {
+header{position:sticky;top:0;backdrop-filter:blur(20px);background:rgba(255,255,255,0.3);border-bottom:1px solid rgba(255,255,255,0.3);padding:20px 40px;display:flex;justify-content:space-between;align-items:center}
+nav a{margin-left:20px;text-decoration:none;color:#444;font-weight:500}
+nav a:hover{color:#6d28d9}
+
+section{padding:60px 40px;opacity:0;transform:translateY(40px);transition:0.6s}
+section.show{opacity:1;transform:translateY(0)}
+
+.hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:40px;opacity:1;transform:none}
+.hero img{width:100%;border-radius:20px}
+
+.btn{padding:12px 25px;background:#6d28d9;color:#fff;border-radius:25px;text-decoration:none;display:inline-block;margin-right:10px}
+
+.card{background:rgba(255,255,255,0.4);backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,0.3);padding:20px;border-radius:20px;box-shadow:0 10px 25px rgba(109,40,217,0.2);transition:0.3s}
+.card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(109,40,217,0.3)}
+
+.grid{display:grid;gap:20px}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+
+.badge{background:#ede9fe;color:#6d28d9;padding:4px 8px;border-radius:12px;font-size:12px;font-weight:600;margin-left:10px}
+
+footer{text-align:center;padding:20px;background:#6d28d9;color:#fff}
+
+input,select{width:100%;padding:10px;border-radius:10px;border:1px solid #ccc}
+button{padding:12px;background:#6d28d9;color:#fff;border:none;border-radius:10px;cursor:pointer}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <h2>Joy Yoga</h2>
+    <span>Guided by Madhavi Dixit</span>
+    <span class="badge">✔ Verified Instructor</span>
+  </div>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#batches">Batches</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#register">Register</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>Move with peace. Practice with joy.</h1>
+    <p>Online & offline yoga sessions with certified instructor.</p>
+    <a class="btn" href="#register">Register</a>
+    <a class="btn" href="https://wa.me/18382509304">WhatsApp</a>
+  </div>
+  <img src="https://images.unsplash.com/photo-1545389336-cf090694435e" />
+</section>
+
+<section id="about">
+  <h2>About</h2>
+  <div class="grid grid-3">
+    <div class="card">
+      <h3>Certification</h3>
+      <ul>
+        <li>RYT200 Yoga Alliance</li>
+        <li>YICC Patanjali Yoga</li>
+        <li>Vedic Yoga Training</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Experience</h3>
+      <p>6+ years teaching yoga online & offline</p>
+    </div>
+    <div class="card">
+      <h3>Style</h3>
+      <p>Mindful, beginner-friendly, strength & flexibility focused</p>
+    </div>
+  </div>
+</section>
+
+<section id="batches">
+  <h2>Batches</h2>
+  <div class="grid grid-3">
+    <div class="card">Weekday 7PM<br>Slots: <span id="weekday"></span></div>
+    <div class="card">Sunday HCC 8AM<br>Slots: <span id="sunday"></span></div>
+    <div class="card">Private Classes<br>Slots: <span id="private"></span></div>
+  </div>
+</section>
+
+<section id="pricing">
+  <h2>Pricing</h2>
+  <div class="grid grid-3">
+    <div class="card">$50/month</div>
+    <div class="card">$139.99 / 3 months</div>
+    <div class="card">Private $100/month</div>
+    <div class="card">Private 3 months $270</div>
+  </div>
+</section>
+
+<section id="register">
+  <h2>Register</h2>
+  <form onsubmit="submitForm(event)">
+    <input id="name" placeholder="Name" required>
+    <input id="email" placeholder="Email" required>
+    <input id="phone" placeholder="Phone" required>
+    <select id="plan">
+      <option>Weekday</option>
+      <option>Sunday</option>
+      <option>Private</option>
+    </select>
+    <button>Submit</button>
+  </form>
+</section>
+
+<footer>© Joy Yoga</footer>
+
+<script>
+// SCROLL ANIMATION
+const sections = document.querySelectorAll("section");
+window.addEventListener("scroll", () => {
+  sections.forEach(sec => {
+    const top = sec.getBoundingClientRect().top;
+    if(top < window.innerHeight - 100){
+      sec.classList.add("show");
+    }
+  });
+});
+
+// SLOT TRACKING (REAL)
+let slots = JSON.parse(localStorage.getItem("slots")) || {
   weekday: 8,
   sunday: 10,
-  private: 8,
+  private: 8
 };
 
-export default function JoyYogaWebsite() {
-  const [slots, setSlots] = useState(initialSlots);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    plan: 'Weekday Batch (Online)',
-  });
-  const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    // Force reset slots to updated values (clears old cached 4 issue)
-    localStorage.removeItem('joyYogaSlots');
-    setSlots(initialSlots);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('joyYogaSlots', JSON.stringify(slots));
-  }, [slots]);
-
-  const whatsappMessage = useMemo(() => {
-    return encodeURIComponent(
-      'Hi Madhavi, I would like to join Joy Yoga. Please share the next steps for registration.'
-    );
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    let slotKey = 'weekday';
-    if (formData.plan.includes('Sunday')) slotKey = 'sunday';
-    if (formData.plan.includes('Private')) slotKey = 'private';
-
-    if (slots[slotKey] <= 0) {
-      alert('That batch is currently full. Please message on WhatsApp for the waitlist.');
-      return;
-    }
-
-    const updatedSlots = {
-      ...slots,
-      [slotKey]: Math.max(0, slots[slotKey] - 1),
-    };
-    setSlots(updatedSlots);
-    setSubmitted(true);
-
-    const subject = encodeURIComponent(`Joy Yoga Registration - ${formData.plan}`);
-    const body = encodeURIComponent(
-      `New Joy Yoga registration:%0D%0A%0D%0AName: ${formData.name}%0D%0AEmail: ${formData.email}%0D%0APhone: ${formData.phone}%0D%0ASelected Plan: ${formData.plan}%0D%0A%0D%0APlease follow up with this student.`
-    );
-
-    window.location.href = `mailto:madhavisgp@gmail.com?subject=${subject}&body=${body}`;
-
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      plan: 'Weekday Batch (Online)',
-    });
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50 via-white to-violet-100 text-slate-800">
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/30 border-b border-white/30 shadow-lg shadow-violet-200/40">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-violet-900">Joy Yoga</h1>
-            <div className="flex items-center gap-2">
-            <p className="text-sm text-slate-500">Guided by Madhavi Dixit</p>
-            <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-1 text-xs font-semibold text-violet-800">
-              <CheckCircle2 className="h-3 w-3" /> Verified Instructor
-            </span>
-          </div>
-          </div>
-          <nav className="hidden gap-6 md:flex text-sm font-medium text-slate-700">
-            <a href="#about" className="hover:text-violet-700 transition">About</a>
-            <a href="#batches" className="hover:text-violet-700 transition">Batches</a>
-            <a href="#pricing" className="hover:text-violet-700 transition">Pricing</a>
-            <a href="#register" className="hover:text-violet-700 transition">Register</a>
-            <a href="#contact" className="hover:text-violet-700 transition">Contact</a>
-          </nav>
-        </div>
-      </header>
-
-      <section className="relative overflow-hidden">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 py-20 md:grid-cols-2 md:py-24">
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.6 }}>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-violet-100 px-4 py-2 text-sm font-medium text-violet-800">
-              <Sparkles className="h-4 w-4" /> Wellness • Balance • Strength
-            </div>
-            <h2 className="text-4xl font-bold leading-tight text-violet-950 md:text-6xl">
-              Move with peace. <br /> Practice with joy.
-            </h2>
-            <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
-              Join guided yoga sessions by Madhavi Dixit through structured online batches,
-              affordable private classes, and a special Sunday session in partnership with HCC Albany.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <a
-                href="#register"
-                className="rounded-2xl bg-violet-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-800"
-              >
-                Register Now
-              </a>
-              <a
-                href={`https://wa.me/18382509304?text=${whatsappMessage}`}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-2xl border border-violet-200 bg-white px-6 py-3 text-sm font-semibold text-violet-800 transition hover:-translate-y-0.5 hover:border-violet-300"
-              >
-                Join via WhatsApp
-              </a>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7 }}
-            className="relative"
-          >
-            <div className="rounded-[2rem] bg-white/40 backdrop-blur-lg p-4 shadow-2xl shadow-violet-200 border border-white/30">
-              <img
-                src="https://images.unsplash.com/photo-1545389336-cf090694435e?auto=format&fit=crop&w=1200&q=80"
-                alt="Yoga practice"
-                className="h-[460px] w-full rounded-[1.5rem] object-cover"
-              />
-            </div>
-            <div className="absolute -bottom-4 left-4 rounded-2xl bg-white/40 backdrop-blur-lg px-5 py-4 shadow-xl border border-white/30">
-              <p className="text-sm text-slate-500">Starting at</p>
-              <p className="text-2xl font-bold text-violet-800">$50/month</p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <section id="about" className="mx-auto max-w-7xl px-6 py-16">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUp} transition={{ duration: 0.5 }}>
-          <div className="mb-10 max-w-3xl">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-violet-700">About Joy Yoga</p>
-            <h3 className="text-3xl font-bold text-violet-950 md:text-4xl">Certified guidance with a calm, personal touch</h3>
-            <p className="mt-4 text-lg leading-8 text-slate-600">
-              Joy Yoga is run by Madhavi Dixit, offering yoga sessions designed to support flexibility,
-              breathwork, strength, and everyday wellbeing. The classes are welcoming for beginners and
-              supportive for returning practitioners.
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="rounded-3xl bg-white/40 backdrop-blur-lg p-6 shadow-lg shadow-violet-200 border border-white/30">
-              <h4 className="text-lg font-semibold text-violet-900">Certification & Experience</h4>
-              <div className="mt-3 text-slate-600">
-                <ul className="list-disc pl-5 space-y-2">
-                  <li><strong>RYT 200 Yoga Alliance Certified</strong> (Union Yoga Ayurveda, Singapore)</li>
-                  <li>Yoga Instructor Certificate Course (YICC), Indian Institute of Patanjali Yoga (2020)</li>
-                  <li>Teacher Training in Vedic Yoga, Hindu Centre Singapore (2016)</li>
-                  <li>6+ years of teaching experience (online & in-person)</li>
-                </ul>
-                <div className="mt-4 flex items-center gap-6">
-                  <div className="flex flex-col items-center text-xs text-center">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Yoga_Alliance_logo.png/320px-Yoga_Alliance_logo.png" alt="Yoga Alliance RYT200" className="h-10 object-contain" />
-                    <span>Yoga Alliance (RYT200)</span>
-                  </div>
-                  <div className="flex flex-col items-center text-xs text-center">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Patanjali_Yoga_Logo.png/320px-Patanjali_Yoga_Logo.png" alt="Patanjali Yoga" className="h-10 object-contain" />
-                    <span>Patanjali Yoga Institute</span>
-                  </div>
-                  <div className="flex flex-col items-center text-xs text-center">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Om_symbol.svg/240px-Om_symbol.svg.png" alt="Vedic Yoga" className="h-10 object-contain" />
-                    <span>Vedic Yoga Training</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-3xl bg-white/40 backdrop-blur-lg p-6 shadow-lg shadow-violet-200 border border-white/30">
-              <h4 className="text-lg font-semibold text-violet-900">Class Style</h4>
-              <p className="mt-3 text-slate-600">
-                Balanced sessions focused on mindful movement, posture, flexibility, and consistency.
-              </p>
-            </div>
-            <div className="rounded-3xl bg-white/40 backdrop-blur-lg p-6 shadow-lg shadow-violet-200 border border-white/30">
-              <h4 className="text-lg font-semibold text-violet-900">Accessible Learning</h4>
-              <p className="mt-3 text-slate-600">
-                Most classes are online for convenience. Private sessions can be online or offline based on request.
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      <section id="batches" className="mx-auto max-w-7xl px-6 py-16">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUp} transition={{ duration: 0.5 }}>
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-violet-700">Available Batches</p>
-          <h3 className="text-3xl font-bold text-violet-950 md:text-4xl">Choose your practice rhythm</h3>
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            <BatchCard
-              title="Weekday Batch"
-              days="Monday, Wednesday, Thursday, Friday"
-              time="7:00 PM"
-              mode="Online on Monday & Wednesday • Offline on Thursday & Friday"
-              slots={slots.weekday}
-            />
-            <BatchCard
-              title="Sunday HCC Albany Batch"
-              days="Sunday"
-              time="8:00 AM"
-              mode="Offline at HCC Albany • Joy Yoga × HCC"
-              slots={slots.sunday}
-            />
-            <BatchCard
-              title="Private Classes"
-              days="By request"
-              time="Flexible timing"
-              mode="Online or Offline"
-              slots={slots.private}
-            />
-          </div>
-        </motion.div>
-      </section>
-
-      <section id="pricing" className="mx-auto max-w-7xl px-6 py-16">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUp} transition={{ duration: 0.5 }}>
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-violet-700">Pricing</p>
-          <h3 className="text-3xl font-bold text-violet-950 md:text-4xl">Simple and reasonable plans</h3>
-          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            <PriceCard title="Monthly Group Plan" price="$50" subtitle="per month" details="Includes weekday batch access" />
-            <PriceCard title="3-Month Group Plan" price="$139.99" subtitle="for 3 months" details="Discounted for consistent practice" crossed="$150" />
-            <PriceCard title="Private Monthly Plan" price="$100" subtitle="per month" details="Exclusive private sessions by request" />
-            <PriceCard title="Private 3-Month Package" price="$270" subtitle="for 3 months" details="Discounted private package" crossed="$300" featured />
-          </div>
-        </motion.div>
-      </section>
-
-      <section id="register" className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_.9fr]">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUp} transition={{ duration: 0.5 }} className="rounded-[2rem] bg-white/40 backdrop-blur-lg p-8 shadow-xl shadow-violet-200 border border-white/30">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-violet-700">Register</p>
-            <h3 className="text-3xl font-bold text-violet-950">Reserve your spot</h3>
-            <p className="mt-3 text-slate-600">
-              Fill out the form below. On submit, it opens an email draft with the student's details already filled in.
-            </p>
-
-            <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-              <Input label="Full Name" name="name" value={formData.name} onChange={handleChange} placeholder="Enter your full name" />
-              <Input label="Email Address" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Enter your email" />
-              <Input label="Phone Number" name="phone" value={formData.phone} onChange={handleChange} placeholder="Enter your phone number" />
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">Select Plan</label>
-                <select
-                  name="plan"
-                  value={formData.plan}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-violet-500"
-                >
-                  <option>Weekday Batch (Online)</option>
-                  <option>Sunday HCC Albany Batch</option>
-                  <option>Private Classes</option>
-                </select>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full rounded-2xl bg-violet-700 px-6 py-3 font-semibold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-800"
-              >
-                Register & Send Email
-              </button>
-            </form>
-
-            {submitted && (
-              <div className="mt-5 flex items-start gap-3 rounded-2xl bg-violet-50 p-4 text-violet-900">
-                <CheckCircle2 className="mt-0.5 h-5 w-5" />
-                <p className="text-sm leading-6">
-                  Your form was prepared successfully and one slot has been reserved on this device.
-                </p>
-              </div>
-            )}
-          </motion.div>
-
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUp} transition={{ duration: 0.6 }} className="space-y-6">
-            <div className="rounded-[2rem] bg-violet-900 p-8 text-white shadow-2xl shadow-violet-200">
-              <h4 className="text-2xl font-bold">Prefer WhatsApp?</h4>
-              <p className="mt-3 text-violet-50/90">
-                Tap below to instantly message Joy Yoga and ask about joining, private classes, or current availability.
-              </p>
-              <a
-                href={`https://wa.me/18382509304?text=${whatsappMessage}`}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 font-semibold text-violet-900 transition hover:-translate-y-0.5"
-              >
-                <MessageCircle className="h-5 w-5" /> Message on WhatsApp
-              </a>
-            </div>
-
-            <div className="rounded-[2rem] bg-white/40 backdrop-blur-lg p-8 shadow-xl shadow-violet-200 border border-white/30">
-              <h4 className="text-xl font-bold text-violet-950">Important note</h4>
-              <ul className="mt-4 space-y-3 text-slate-600">
-                <li>• Group classes are mainly online.</li>
-                <li>• Only Thursday and Friday group classes are offline.</li>
-                <li>• Private classes can be online or offline.</li>
-                <li>• Sunday 8:00 AM batch is at HCC Albany.</li>
-              </ul>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <section id="contact" className="mx-auto max-w-7xl px-6 py-16">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={fadeUp} transition={{ duration: 0.5 }} className="rounded-[2rem] bg-white/40 backdrop-blur-lg p-8 shadow-xl shadow-violet-200 border border-white/30">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-violet-700">Contact</p>
-          <h3 className="text-3xl font-bold text-violet-950">Get in touch</h3>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <a href="tel:8382509304" className="flex items-center gap-3 rounded-2xl border border-slate-100 p-4 transition hover:border-violet-200 hover:bg-violet-50">
-              <Phone className="h-5 w-5 text-violet-700" />
-              <span className="font-medium">8382509304</span>
-            </a>
-            <a href="mailto:madhavisgp@gmail.com" className="flex items-center gap-3 rounded-2xl border border-slate-100 p-4 transition hover:border-violet-200 hover:bg-violet-50">
-              <Mail className="h-5 w-5 text-violet-700" />
-              <span className="font-medium">madhavisgp@gmail.com</span>
-            </a>
-            <div className="flex items-center gap-3 rounded-2xl border border-slate-100 p-4">
-              <Clock className="h-5 w-5 text-violet-700" />
-              <span className="font-medium">Weekday batch at 7:00 PM</span>
-            </div>
-            <div className="flex items-center gap-3 rounded-2xl border border-slate-100 p-4">
-              <MapPin className="h-5 w-5 text-violet-700" />
-              <span className="font-medium">Sunday batch at HCC Albany, 8:00 AM</span>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-    </div>
-  );
+function updateSlots(){
+  document.getElementById("weekday").innerText = slots.weekday;
+  document.getElementById("sunday").innerText = slots.sunday;
+  document.getElementById("private").innerText = slots.private;
 }
+updateSlots();
 
-function BatchCard({ title, days, time, mode, slots }) {
-  return (
-    <motion.div
-      whileHover={{ y: -6 }}
-      className="rounded-[2rem] bg-white/40 backdrop-blur-lg p-7 shadow-xl shadow-violet-200 border border-white/30"
-    >
-      <h4 className="text-2xl font-bold text-violet-950">{title}</h4>
-      <div className="mt-5 space-y-3 text-slate-600">
-        <p><span className="font-semibold text-slate-800">Days:</span> {days}</p>
-        <p><span className="font-semibold text-slate-800">Time:</span> {time}</p>
-        <p><span className="font-semibold text-slate-800">Mode:</span> {mode}</p>
-      </div>
-      <div className="mt-6 inline-flex rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700">
-        Only {slots} slot{slots === 1 ? '' : 's'} left
-      </div>
-    </motion.div>
-  );
-}
+// FORM + EMAIL + SLOT REDUCE
+function submitForm(e){
+  e.preventDefault();
 
-function PriceCard({ title, price, subtitle, details, crossed, featured = false }) {
-  return (
-    <motion.div
-      whileHover={{ y: -6 }}
-      className={`rounded-[2rem] p-7 shadow-xl ${featured ? 'bg-violet-900 text-white shadow-violet-200' : 'bg-white/40 backdrop-blur-lg text-slate-800 shadow-violet-200 border border-white/30'}`}
-    >
-      <h4 className="text-xl font-bold">{title}</h4>
-      {crossed && (
-        <p className={`mt-4 text-sm line-through ${featured ? 'text-violet-100/80' : 'text-slate-400'}`}>{crossed}</p>
-      )}
-      <div className="mt-1 flex items-end gap-2">
-        <span className="text-4xl font-bold">{price}</span>
-        <span className={`${featured ? 'text-violet-100' : 'text-slate-500'}`}>{subtitle}</span>
-      </div>
-      <p className={`mt-4 leading-7 ${featured ? 'text-violet-50/90' : 'text-slate-600'}`}>{details}</p>
-    </motion.div>
-  );
-}
+  let name = document.getElementById("name").value;
+  let email = document.getElementById("email").value;
+  let phone = document.getElementById("phone").value;
+  let plan = document.getElementById("plan").value;
 
-function Input({ label, ...props }) {
-  return (
-    <div>
-      <label className="mb-2 block text-sm font-medium text-slate-700">{label}</label>
-      <input
-        {...props}
-        required
-        className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-violet-500"
-      />
-    </div>
-  );
+  let key = plan.toLowerCase();
+
+  if(slots[key] <= 0){
+    alert("No slots left!");
+    return;
+  }
+
+  slots[key]--;
+  localStorage.setItem("slots", JSON.stringify(slots));
+  updateSlots();
+
+  window.location.href = `mailto:madhavisgp@gmail.com?subject=Joy Yoga Registration&body=Name:${name}%0AEmail:${email}%0APhone:${phone}%0APlan:${plan}`;
 }
+</script>
+
+</body>
+</html>
