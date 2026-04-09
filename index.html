@@ -8,32 +8,35 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
-body{background:linear-gradient(to bottom,#f5f3ff,#fff,#ede9fe);color:#333;scroll-behavior:smooth}
+body{background:linear-gradient(120deg,#f5f3ff,#fff,#ede9fe);color:#333;scroll-behavior:smooth}
 
-header{position:sticky;top:0;backdrop-filter:blur(20px);background:rgba(255,255,255,0.3);border-bottom:1px solid rgba(255,255,255,0.3);padding:20px 40px;display:flex;justify-content:space-between;align-items:center}
+header{position:sticky;top:0;z-index:1000;backdrop-filter:blur(20px);background:rgba(255,255,255,0.3);border-bottom:1px solid rgba(255,255,255,0.3);padding:20px 40px;display:flex;justify-content:space-between;align-items:center}
 nav a{margin-left:20px;text-decoration:none;color:#444;font-weight:500}
 nav a:hover{color:#6d28d9}
 
-section{padding:60px 40px;opacity:0;transform:translateY(40px);transition:0.6s}
+section{padding:80px 40px;opacity:0;transform:translateY(40px);transition:0.6s}
 section.show{opacity:1;transform:translateY(0)}
 
 .hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:40px;opacity:1;transform:none}
-.hero img{width:100%;border-radius:20px}
+.hero img{width:100%;border-radius:25px}
+.hero h1{font-size:48px}
 
-.btn{padding:12px 25px;background:#6d28d9;color:#fff;border-radius:25px;text-decoration:none;display:inline-block;margin-right:10px}
+.btn{padding:14px 28px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-radius:30px;text-decoration:none;display:inline-block;margin:5px}
 
-.card{background:rgba(255,255,255,0.4);backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,0.3);padding:20px;border-radius:20px;box-shadow:0 10px 25px rgba(109,40,217,0.2);transition:0.3s}
-.card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(109,40,217,0.3)}
-
-.grid{display:grid;gap:20px}
+.card{background:rgba(255,255,255,0.4);backdrop-filter:blur(18px);padding:25px;border-radius:25px;box-shadow:0 10px 25px rgba(109,40,217,0.2)}
+.grid{display:grid;gap:25px}
 .grid-3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
 
-.badge{background:#ede9fe;color:#6d28d9;padding:4px 8px;border-radius:12px;font-size:12px;font-weight:600;margin-left:10px}
+.badge{background:#ede9fe;color:#6d28d9;padding:5px 10px;border-radius:12px;font-size:12px}
 
-footer{text-align:center;padding:20px;background:#6d28d9;color:#fff}
+footer{text-align:center;padding:25px;background:#6d28d9;color:#fff}
 
-input,select{width:100%;padding:10px;border-radius:10px;border:1px solid #ccc}
-button{padding:12px;background:#6d28d9;color:#fff;border:none;border-radius:10px;cursor:pointer}
+input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc}
+button{padding:14px;background:#6d28d9;color:#fff;border:none;border-radius:12px;cursor:pointer}
+
+.sticky-cta{
+ position:fixed;bottom:20px;right:20px;background:#6d28d9;color:#fff;padding:15px 20px;border-radius:30px;box-shadow:0 10px 30px rgba(0,0,0,0.2);cursor:pointer
+}
 
 </style>
 </head>
@@ -43,55 +46,30 @@ button{padding:12px;background:#6d28d9;color:#fff;border:none;border-radius:10px
 <header>
   <div>
     <h2>Joy Yoga</h2>
-    <span>Guided by Madhavi Dixit</span>
     <span class="badge">✔ Verified Instructor</span>
   </div>
   <nav>
     <a href="#about">About</a>
-    <a href="#batches">Batches</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#register">Register</a>
+    <a href="#register">Join</a>
   </nav>
 </header>
 
-<section class="hero">
+<section class="hero show">
   <div>
-    <h1>Move with peace. Practice with joy.</h1>
-    <p>Online & offline yoga sessions with certified instructor.</p>
-    <a class="btn" href="#register">Register</a>
+    <h1>Move with peace.</h1>
+    <p>Premium yoga sessions</p>
+    <a class="btn" href="#register">Join Now</a>
     <a class="btn" href="https://wa.me/18382509304">WhatsApp</a>
   </div>
-  <img src="https://images.unsplash.com/photo-1545389336-cf090694435e" />
-</section>
-
-<section id="about">
-  <h2>About</h2>
-  <div class="grid grid-3">
-    <div class="card">
-      <h3>Certification</h3>
-      <ul>
-        <li>RYT200 Yoga Alliance</li>
-        <li>YICC Patanjali Yoga</li>
-        <li>Vedic Yoga Training</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h3>Experience</h3>
-      <p>6+ years teaching yoga online & offline</p>
-    </div>
-    <div class="card">
-      <h3>Style</h3>
-      <p>Mindful, beginner-friendly, strength & flexibility focused</p>
-    </div>
-  </div>
+  <img src="https://images.unsplash.com/photo-1545389336-cf090694435e?auto=format&fit=crop&w=1200&q=80" />
 </section>
 
 <section id="batches">
   <h2>Batches</h2>
   <div class="grid grid-3">
-    <div class="card">Weekday 7PM<br>Slots: <span id="weekday"></span></div>
-    <div class="card">Sunday HCC 8AM<br>Slots: <span id="sunday"></span></div>
-    <div class="card">Private Classes<br>Slots: <span id="private"></span></div>
+    <div class="card">Weekday Slots: <span id="weekday"></span></div>
+    <div class="card">Sunday Slots: <span id="sunday"></span></div>
+    <div class="card">Private Slots: <span id="private"></span></div>
   </div>
 </section>
 
@@ -107,69 +85,40 @@ button{padding:12px;background:#6d28d9;color:#fff;border:none;border-radius:10px
 
 <section id="register">
   <h2>Register</h2>
-  <form onsubmit="submitForm(event)">
-    <input id="name" placeholder="Name" required>
-    <input id="email" placeholder="Email" required>
-    <input id="phone" placeholder="Phone" required>
-    <select id="plan">
+  <form action="https://formsubmit.co/madhavisgp@gmail.com" method="POST">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="text" name="phone" placeholder="Phone" required>
+    <select name="plan">
       <option>Weekday</option>
       <option>Sunday</option>
       <option>Private</option>
     </select>
-    <button>Submit</button>
+    <button type="submit">Register</button>
   </form>
 </section>
+
+<div class="sticky-cta" onclick="window.location='#register'">Join Now</div>
 
 <footer>© Joy Yoga</footer>
 
 <script>
 // SCROLL ANIMATION
-const sections = document.querySelectorAll("section");
-window.addEventListener("scroll", () => {
-  sections.forEach(sec => {
-    const top = sec.getBoundingClientRect().top;
-    if(top < window.innerHeight - 100){
-      sec.classList.add("show");
-    }
-  });
-});
+const sections=document.querySelectorAll("section")
+window.addEventListener("scroll",()=>{
+ sections.forEach(sec=>{
+  if(sec.getBoundingClientRect().top<window.innerHeight-100){sec.classList.add("show")}
+ })
+})
 
-// SLOT TRACKING (REAL)
-let slots = JSON.parse(localStorage.getItem("slots")) || {
-  weekday: 8,
-  sunday: 10,
-  private: 8
-};
-
+// SLOT SYSTEM
+let slots=JSON.parse(localStorage.getItem("slots"))||{weekday:8,sunday:10,private:8}
 function updateSlots(){
-  document.getElementById("weekday").innerText = slots.weekday;
-  document.getElementById("sunday").innerText = slots.sunday;
-  document.getElementById("private").innerText = slots.private;
+ document.getElementById("weekday").innerText=slots.weekday
+ document.getElementById("sunday").innerText=slots.sunday
+ document.getElementById("private").innerText=slots.private
 }
-updateSlots();
-
-// FORM + EMAIL + SLOT REDUCE
-function submitForm(e){
-  e.preventDefault();
-
-  let name = document.getElementById("name").value;
-  let email = document.getElementById("email").value;
-  let phone = document.getElementById("phone").value;
-  let plan = document.getElementById("plan").value;
-
-  let key = plan.toLowerCase();
-
-  if(slots[key] <= 0){
-    alert("No slots left!");
-    return;
-  }
-
-  slots[key]--;
-  localStorage.setItem("slots", JSON.stringify(slots));
-  updateSlots();
-
-  window.location.href = `mailto:madhavisgp@gmail.com?subject=Joy Yoga Registration&body=Name:${name}%0AEmail:${email}%0APhone:${phone}%0APlan:${plan}`;
-}
+updateSlots()
 </script>
 
 </body>
